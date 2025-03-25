@@ -46,7 +46,8 @@ public:
 
 
     void deallocate(T* ptr, std::size_t count){
-        _ar.deallocate(reinterpret_cast<std::byte*>(ptr));
+    	if(ptr)
+	        _ar.deallocate(reinterpret_cast<std::byte*>(ptr));
     }
 
     template<class ... Args>

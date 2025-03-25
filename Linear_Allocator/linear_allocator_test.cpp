@@ -1,4 +1,4 @@
-#include "linear_alloc.hpp"
+#include "linear_allocator.hpp"
 #include <iostream>
 
 template<std::size_t N>

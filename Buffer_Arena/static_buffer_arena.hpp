@@ -44,21 +44,18 @@ class arena{
     std::byte* curr_byte {static_cast<std::byte*>(buffer)};
     std::byte* end_byte {static_cast<std::byte*>(buffer + bytes)};
 
-    /*bool is_aligned_by(void* ptr, std::size_t alignment){
-        return (reinterpret_cast<uintptr_t>(ptr) % alignment == 0);
-    }*/
-
-
 public:
 
     arena() = default;
+
+	// Disable copy and move constructors and assignment operators for arena    
     arena(const arena&) = delete;
-    arena(arena&&) = delete; // to be implemented
+	arena& operator= (const arena&) = delete;
 
-    arena& operator= (const arena&) = delete;
-    arena& operator= (arena&&) = delete; // to be implemented
+    arena(arena&&) = delete;
+    arena& operator= (arena&&) = delete;
 
-
+	[[gnu::alloc_align(3), gnu::alloc_size(2), gnu::malloc, gnu::returns_nonnull]] [[nodiscard]]
     std::byte* allocate(std::size_t count, std::size_t align = alignof(std::max_align_t)){
 
         if(available_bytes < count)
@@ -78,9 +75,10 @@ public:
                 ptr = static_cast<void*>(block.ptr);
                 bytes_for_align = block.count;
                 ptr = std::align(align, count, ptr, bytes_for_align);
-                if(ptr != nullptr)
-                    return true;
-                return false;
+                return (ptr) ? true : false;
+                //if(ptr)
+                //    return true;
+                //return false;
             })};
 
             if(matched_block != freelist.end()){
@@ -114,6 +112,7 @@ public:
         throw std::bad_alloc();
     }
 
+	[[gnu::nonnull]]
     void deallocate(std::byte* ptr){
 
         const iter_type block_pos {std::find_if(uselist.begin(), uselist.end(), [&](const block_info& block) -> bool {
@@ -144,11 +143,6 @@ public:
 
         std::size_t get_occupied_bytes() const {
             return occupied_bytes;
-        }
-
-        void print(){
-            for(std::size_t i{0}; i<bytes; i+=4)
-                std::printf("is aligned by 4: %d\n", is_aligned_by(static_cast<void*>(&buffer[i]), 4));
         }
     */
 };

@@ -73,7 +73,7 @@ public:
     pool_allocator() :
         pool_allocator(sysconf(_SC_PAGE_SIZE)) {}
 
-    pool_allocator(const std::size_t& buffer_size) :
+    explicit pool_allocator(const std::size_t& buffer_size) :
         pool_allocator(mmap(nullptr, buffer_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1,  0), buffer_size) {}
 
     pool_allocator(void* buffer, const std::size_t& buffer_size) :

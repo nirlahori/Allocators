@@ -44,12 +44,7 @@ public:
 
     std::size_t get_occupied_bytes() const {
         return ar.get_occupied_bytes();
-    }
-
-    void print_align(){
-        ar.print();
     }*/
-
 };
 
 
