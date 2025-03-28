@@ -13,9 +13,7 @@
 int main(){
 
     constexpr std::size_t req_size {8};
-    constexpr std::size_t req_align {8};
-
-    pool_allocator<req_size, req_align> p1(req_size * 100);
+    pool_allocator p1(req_size * 100);
 
     std::array<double*, 100> darray;
 

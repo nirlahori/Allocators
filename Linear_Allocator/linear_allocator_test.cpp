@@ -3,8 +3,8 @@
 
 template<std::size_t N>
 void print_info(std::size_t bytes, const linear_contiguous_allocator<N>& alloc){
-    //std::cout << "Available bytes after alloc of " << bytes << " bytes -> " << alloc.get_available_bytes() << std::endl;
-    //std::cout << "Occupied bytes after alloc of " << bytes << " bytes -> " << alloc.get_occupied_bytes() << std::endl;
+    std::cout << "Available bytes after alloc of " << bytes << " bytes -> " << alloc.get_available_bytes() << std::endl;
+    std::cout << "Occupied bytes after alloc of " << bytes << " bytes -> " << alloc.get_occupied_bytes() << std::endl;
 }
 
 int main(){

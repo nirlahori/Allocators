@@ -2,6 +2,14 @@
 #define STATIC_BUFFER_ARENA_HPP
 
 
+/**
+ * Arena class represents the memory arena. Users need to specify the size of the arena as template
+ * parameter. Allocators can use this arena for allocating and deallocating arbitrarily sized memory
+ * blocks. Arena maintains the list of memory blocks which are in use as well as free memory blocks.
+ */
+
+
+
 #include <cstddef>
 #include <list>
 #include <algorithm>
@@ -9,7 +17,11 @@
 #include <cstdint>
 #include <memory>
 
-
+/**
+ * @brief The block_info class
+ * Internal data structure used by arena to maintain information about the allocated and deallocated
+ * memory blocks.
+ */
 struct block_info{
     std::byte* ptr;
     std::size_t aligned_by;
@@ -48,13 +60,21 @@ public:
 
     arena() = default;
 
-	// Disable copy and move constructors and assignment operators for arena    
+    // Arena cannot be copied
     arena(const arena&) = delete;
 	arena& operator= (const arena&) = delete;
 
+    // Arena cannot be moved
     arena(arena&&) = delete;
     arena& operator= (arena&&) = delete;
 
+
+    /**
+     * @brief allocate Allocates the storage from arena
+     * @param count Size of block to allocate
+     * @param align Alignment of the block to allocate
+     * @return Address of the allocated block
+     */
 	[[gnu::alloc_align(3), gnu::alloc_size(2), gnu::malloc, gnu::returns_nonnull]] [[nodiscard]]
     std::byte* allocate(std::size_t count, std::size_t align = alignof(std::max_align_t)){
 
@@ -71,14 +91,9 @@ public:
 
                 if(block.count < count)
                     return false;
-
                 ptr = static_cast<void*>(block.ptr);
                 bytes_for_align = block.count;
-                ptr = std::align(align, count, ptr, bytes_for_align);
-                return (ptr) ? true : false;
-                //if(ptr)
-                //    return true;
-                //return false;
+                return (std::align(align, count, ptr, bytes_for_align)) ? true : false;
             })};
 
             if(matched_block != freelist.end()){
@@ -112,6 +127,10 @@ public:
         throw std::bad_alloc();
     }
 
+    /**
+     * @brief deallocate Deallocates the storage
+     * @param ptr Address of the block to deallocate
+     */
 	[[gnu::nonnull]]
     void deallocate(std::byte* ptr){
 
@@ -133,18 +152,17 @@ public:
             freelist.push_back(std::move(freeblock));
         }
         uselist.remove(*block_pos);
-
     }
 
-    /*
-        std::size_t get_available_bytes() const {
-            return available_bytes;
-        }
+#ifdef ARENA_BYTE_INFO
+    std::size_t get_available_bytes() const {
+        return available_bytes;
+    }
 
-        std::size_t get_occupied_bytes() const {
-            return occupied_bytes;
-        }
-    */
+    std::size_t get_occupied_bytes() const {
+        return occupied_bytes;
+    }
+#endif
 };
 
 

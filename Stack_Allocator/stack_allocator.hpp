@@ -30,13 +30,30 @@ public:
         using other = stack_allocator<U, elements>;
     };
 
+    /**
+     * @brief stack_allocator Default constructor
+     */
     stack_allocator() = default;
+
+    /**
+     * @brief stack_allocator Copy constructor is defaulted
+     */
     stack_allocator(const stack_allocator&) = default;
+
+    /**
+     * @brief operator = Copy assignment operator is defaulted
+     * @return
+     */
     stack_allocator& operator=(const stack_allocator&) = default;
 
     template<typename U>
-    stack_allocator(const U& alloc){}
+    stack_allocator(const U&){}
 
+    /**
+     * @brief allocate Allocates the memory
+     * @param count Total number of the objects of type T for which memory has to be allocated
+     * @return Address of the allocated memory
+     */
     T* allocate(std::size_t count){
         std::byte* ptr{_ar.allocate(count * sizeof(T), alignof(T))};
         if(!ptr)
@@ -44,17 +61,30 @@ public:
         return reinterpret_cast<T*>(ptr);
     }
 
-
-    void deallocate(T* ptr, std::size_t count){
+    /**
+     * @brief deallocate Deallocates the memory
+     * @param ptr Ptr to an address of the object for which memory has to be deallocated
+     * @param count Total number of objects to deallocate
+     */
+    void deallocate(T* ptr, [[maybe_unused]] std::size_t count){
     	if(ptr)
 	        _ar.deallocate(reinterpret_cast<std::byte*>(ptr));
     }
 
+    /**
+     * @brief construct Constructs an object of type T with given arguments at address ptr
+     * @param ptr Address to be used for construction of object
+     * @param args Arguments to pass to the constructor of type T
+     */
     template<class ... Args>
     void construct(T* ptr, Args&& ... args){
         ::new(static_cast<void*>(ptr)) T(std::forward<Args>(args)...);
     }
 
+    /**
+     * @brief destroy Calls the destructor of object
+     * @param ptr Ptr to object for which destructor has to be called
+     */
     void destroy(T* ptr){
         ptr->~T();
     }
